@@ -90,6 +90,38 @@ against yet. Every run after that reports differences.
 `--once` exits **10** when something changed and **0** when nothing did, so you
 can chain it in a shell script.
 
+### Run it in the cloud (recommended)
+
+A laptop that sleeps is a watcher that misses things. This repo ships a GitHub
+Actions workflow that runs the check every 30 minutes on GitHub's machines —
+free and unlimited on a public repo, no server to rent.
+
+Add your notification settings under **Settings → Secrets and variables →
+Actions → New repository secret**:
+
+| Secret | |
+| --- | --- |
+| `BRACU_EMAIL_TO` | where alerts go |
+| `BRACU_EMAIL_FROM` | the Gmail account sending them |
+| `BRACU_EMAIL_PASSWORD` | a Google **app password** |
+| `BRACU_TELEGRAM_TOKEN` | optional |
+| `BRACU_TELEGRAM_CHAT` | optional |
+
+Then open the **Actions** tab and run *Watch BRACU results* once by hand to
+confirm it works. After that it runs itself.
+
+iMessage is macOS-only and needs a signed-in Mac, so it can't work from a
+runner — the cloud copy notifies by email and Telegram. Run the local copy too
+if you want the iMessage.
+
+The workflow commits `bracu_state.json` back to the repo after each change,
+which is how the cloud runs remember what the page looked like last time. That
+history also becomes a dated log of when each result was published.
+
+One caveat worth knowing: GitHub queues scheduled workflows and can delay them
+by several minutes when it's busy. Fine for a notice board that updates a few
+times a semester; don't rely on this pattern for something time-critical.
+
 ### Run it on a timer (macOS)
 
 ```sh

@@ -1,0 +1,64 @@
+name: Watch BRACU results
+
+# Runs in GitHub's cloud, so it keeps checking whether or not your laptop is on.
+on:
+  schedule:
+    # Every 30 minutes. GitHub queues scheduled runs and can delay them by a
+    # few minutes under load — fine for a notice board, not for a ticket drop.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+
+# The snapshot is committed back to the repo, so two overlapping runs would
+# race on the same file.
+concurrency:
+  group: bracu-watch
+  cancel-in-progress: false
+
+permissions:
+  contents: write           # needed to commit the updated snapshot
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Check the notice page
+        env:
+          # Set these under Settings → Secrets and variables → Actions.
+          # Anything left unset is simply skipped by the script.
+          BRACU_EMAIL_TO: ${{ secrets.BRACU_EMAIL_TO }}
+          BRACU_EMAIL_FROM: ${{ secrets.BRACU_EMAIL_FROM }}
+          BRACU_EMAIL_PASSWORD: ${{ secrets.BRACU_EMAIL_PASSWORD }}
+          BRACU_SMTP_HOST: ${{ secrets.BRACU_SMTP_HOST }}
+          BRACU_SMTP_PORT: ${{ secrets.BRACU_SMTP_PORT }}
+          BRACU_TELEGRAM_TOKEN: ${{ secrets.BRACU_TELEGRAM_TOKEN }}
+          BRACU_TELEGRAM_CHAT: ${{ secrets.BRACU_TELEGRAM_CHAT }}
+          # iMessage needs a signed-in Mac, so it cannot work from a runner.
+        run: python bracu_watch.py --once || [ $? -eq 10 ]
+
+      - name: Save the snapshot
+        run: |
+          if [ -n "$(git status --porcelain bracu_state.json)" ]; then
+            git config user.name  "bracu-watch[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add bracu_state.json
+            git commit -m "BRACU notice changed — $(date -u '+%Y-%m-%d %H:%M UTC')"
+            # Another run may have landed first; rebase rather than fail.
+            git pull --rebase --autostash origin main
+            git push
+          else
+            echo "No change."
+          fi

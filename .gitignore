@@ -1,11 +1,14 @@
-# the snapshot of what the page looked like last check — local runtime state
-bracu_state.json
+# NOTE: bracu_state.json is deliberately NOT ignored. The GitHub Actions run
+# commits it back so the cloud checks have memory between runs, and the commit
+# history doubles as a record of when each result was published.
 bracu_state.json.tmp
 
 # optional local credentials fallback
 config.py
 
 *.log
+# no trailing slash: this is a symlink here, and "venv/" matches only real dirs
+venv
 venv/
 __pycache__/
 *.py[cod]
