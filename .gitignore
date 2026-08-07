@@ -1,0 +1,12 @@
+# the snapshot of what the page looked like last check — local runtime state
+bracu_state.json
+bracu_state.json.tmp
+
+# optional local credentials fallback
+config.py
+
+*.log
+venv/
+__pycache__/
+*.py[cod]
+.DS_Store

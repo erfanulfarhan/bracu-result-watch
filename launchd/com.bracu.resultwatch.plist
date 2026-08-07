@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.bracu.resultwatch</string>
+
+    <!-- One check per invocation. launchd handles the schedule, so a hung
+         browser can't wedge a long-lived loop and stop all future checks. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string>-c</string>
+        <string>cd /Users/YOURNAME/bracu-result-watch &amp;&amp; exec ./venv/bin/python bracu_watch.py --once</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/YOURNAME/bracu-result-watch</string>
+
+    <!-- Notification targets. launchd does not read your shell profile, so
+         they have to be set here rather than exported in .zshrc. -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>BRACU_IMESSAGE</key>
+        <string>you@example.com</string>
+        <key>BRACU_EMAIL_TO</key>
+        <string>you@gmail.com</string>
+        <key>BRACU_EMAIL_FROM</key>
+        <string>you@gmail.com</string>
+        <key>BRACU_EMAIL_PASSWORD</key>
+        <string>xxxx xxxx xxxx xxxx</string>
+    </dict>
+
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/YOURNAME/bracu-result-watch/watch.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOURNAME/bracu-result-watch/watch.log</string>
+</dict>
+</plist>
