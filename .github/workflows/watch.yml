@@ -42,10 +42,9 @@ jobs:
           BRACU_EMAIL_TO: ${{ secrets.BRACU_EMAIL_TO }}
           BRACU_EMAIL_FROM: ${{ secrets.BRACU_EMAIL_FROM }}
           BRACU_EMAIL_PASSWORD: ${{ secrets.BRACU_EMAIL_PASSWORD }}
-          BRACU_SMTP_HOST: ${{ secrets.BRACU_SMTP_HOST }}
-          BRACU_SMTP_PORT: ${{ secrets.BRACU_SMTP_PORT }}
-          BRACU_TELEGRAM_TOKEN: ${{ secrets.BRACU_TELEGRAM_TOKEN }}
-          BRACU_TELEGRAM_CHAT: ${{ secrets.BRACU_TELEGRAM_CHAT }}
+          # SMTP host/port and Telegram default sensibly in the script; only
+          # override here if you actually set those secrets. Passing an unset
+          # secret injects an empty string, which is worse than absence.
           # iMessage needs a signed-in Mac, so it cannot work from a runner.
         run: python bracu_watch.py --once || [ $? -eq 10 ]
 

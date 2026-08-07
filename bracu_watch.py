@@ -59,8 +59,11 @@ IMESSAGE_TARGET = os.environ.get("BRACU_IMESSAGE", "")     # phone or Apple ID
 EMAIL_TO        = os.environ.get("BRACU_EMAIL_TO", "")
 EMAIL_FROM      = os.environ.get("BRACU_EMAIL_FROM", "")
 EMAIL_PASSWORD  = os.environ.get("BRACU_EMAIL_PASSWORD", "")  # Gmail app password
-SMTP_HOST       = os.environ.get("BRACU_SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT       = int(os.environ.get("BRACU_SMTP_PORT", "465"))
+# `or` not a .get default: the CI passes these as empty strings when the secret
+# is unset, and a default only fills a *missing* key, not an empty one — int("")
+# then crashed the whole script at import.
+SMTP_HOST       = os.environ.get("BRACU_SMTP_HOST") or "smtp.gmail.com"
+SMTP_PORT       = int(os.environ.get("BRACU_SMTP_PORT") or "465")
 TELEGRAM_TOKEN  = os.environ.get("BRACU_TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT   = os.environ.get("BRACU_TELEGRAM_CHAT", "")
 
