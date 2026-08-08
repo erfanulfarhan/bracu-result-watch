@@ -147,3 +147,35 @@ A **fetch failure never overwrites the snapshot.** That matters more than it
 looks: if a timeout were recorded as "zero documents", the next successful
 check would see the existing PDFs as brand new and cry wolf — and worse, a
 failure right as results went up could bury the real change.
+
+## Watching your personal result (the applicant portal)
+
+The notice page carries BRAC's *public* "results published" announcement. Your
+**individual** result lives behind login, so `bracu_portal.py` watches the BRAC
+applicant dashboard (Keycloak SSO): it logs in, reads your undergraduate
+application status, and alerts the moment it changes (e.g. "Written Allocated" →
+a result status) or a result section appears.
+
+```sh
+python bracu_portal.py --status     # log in, print your current status
+python bracu_portal.py --once       # one check (what launchd runs)
+python bracu_portal.py              # loop every 30 min
+```
+
+**This runs locally only** — never in public GitHub Actions. It holds your
+portal password (in the gitignored `config.py`) and your personal application
+status (gitignored `bracu_portal_state.json`), neither of which belongs in a
+public repo. The always-on cloud job stays on the notice watcher (public info),
+which catches the announcement even when your laptop is off; the portal watcher
+gives the precise personal status while the Mac is on.
+
+```python
+# config.py
+BRACU_PORTAL_DASH = "https://applicant.bracu.ac.bd/applicant/dashboard"
+BRACU_PORTAL_USER = "you@example.com"
+BRACU_PORTAL_PASS = "your-portal-password"
+```
+
+A failed login leaves the snapshot untouched (same reason as above). If the
+portal ever adds OTP at login, automated login can't pass it — `--status` will
+fail clearly if so.

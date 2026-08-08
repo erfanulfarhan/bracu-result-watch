@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.bracu.portalwatch</string>
+
+    <!-- Logs into the BRAC applicant portal and checks your result status.
+         Runs locally only — credentials and personal status stay on this Mac,
+         out of the public repo. One check per invocation; launchd schedules. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string>-c</string>
+        <string>cd /Users/YOURNAME/bracu-result-watch &amp;&amp; exec ./venv/bin/python bracu_portal.py --once</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/YOURNAME/bracu-result-watch</string>
+
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/YOURNAME/bracu-result-watch/portal.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOURNAME/bracu-result-watch/portal.log</string>
+</dict>
+</plist>

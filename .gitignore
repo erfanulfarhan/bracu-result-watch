@@ -13,3 +13,7 @@ venv/
 __pycache__/
 *.py[cod]
 .DS_Store
+
+# personal portal status snapshot — never commit (contains your application status)
+bracu_portal_state.json
+bracu_portal_state.json.tmp
